@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Operation, Installment, Transaction
 from .models import OperationType, DurationType, IntervalType, InstallmentType
+from bank.models import Bank
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,4 +59,6 @@ class OperationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("pay_date must be later than receive_date")
         if type == OperationType.Fund and pay_date>receive_date:
             raise serializers.ValidationError("receive_date must be later than pay_date")
+        if type == OperationType.Loan and not Bank.objects.first().is_available(attrs.get('amount')):
+            raise serializers.ValidationError('out of balance')
         return attrs
