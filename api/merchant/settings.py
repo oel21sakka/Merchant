@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django_filters',
     'accounts',
     'bank',
+    'operations',
 ]
 
 MIDDLEWARE = [
@@ -128,8 +129,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-BANK_USERID = 1
-
 #Restframework Settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -152,3 +151,5 @@ DJOSER = {
         'user_create': 'accounts.serializers.CustomUserCreateSerializer',
     }
 }
+
+BANK_START_BALANCE = 100000000
