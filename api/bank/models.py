@@ -14,7 +14,7 @@ class Bank(models.Model):
         self.balance-=amount
         return True
 
-    def recieve(self, amount):
+    def receive(self, amount):
         self.balance+=amount
         return True
 

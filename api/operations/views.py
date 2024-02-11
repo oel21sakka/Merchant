@@ -28,8 +28,8 @@ class OperationView(generics.ListCreateAPIView):
     serializer_class = OperationSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['type', 'approved', 'amount', 'pay_duration', 'receive_duration', 'user', 'due_day',\
-        'intreset_rate', 'pay_date', 'receive_date',]
-    ordering_fields = ['amount', 'intreset_rate', 'pay_date', 'receive_date']
+        'interest_rate', 'pay_date', 'receive_date',]
+    ordering_fields = ['amount', 'interest_rate', 'pay_date', 'receive_date']
 
 
 class InstallmentView(generics.ListAPIView):
@@ -88,7 +88,7 @@ def payview(request):
     if installment.type==InstallmentType.Receive:
         Bank.objects.first().pay(installment.amount)
     if installment.type==InstallmentType.Pay:
-        Bank.objects.first().recieve(installment.amount)
+        Bank.objects.first().receive(installment.amount)
     return Response(InstallmentSerializer(installment).data, status=status.HTTP_200_OK)
 
 @api_view(['get'])

@@ -8,7 +8,7 @@ class Operation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     type = models.IntegerField(choices = OperationType)
     amount = models.DecimalField(max_digits = 14, decimal_places = 2)
-    intreset_rate = models.DecimalField(max_digits = 5, decimal_places = 2)
+    interest_rate = models.DecimalField(max_digits = 5, decimal_places = 2)
     pay_date = models.DateField()
     receive_date = models.DateField()
     pay_duration = models.IntegerField(choices=DurationType)
@@ -21,7 +21,7 @@ class Operation(models.Model):
     def get_installments(self):
         installments=[]
         pay_installment_count = self.pay_duration//self.pay_interval
-        pay_installment_amount = round((self.amount + (self.amount*self.intreset_rate/100 if self.type==OperationType.Loan else 0)) / pay_installment_count, 2)
+        pay_installment_amount = round((self.amount + (self.amount*self.intterst_rate/100 if self.type==OperationType.Loan else 0)) / pay_installment_count, 2)
         year_value, month_value = self.pay_date.year, self.pay_date.month
         for _ in range(pay_installment_count):
             installments.append(
@@ -36,7 +36,7 @@ class Operation(models.Model):
                 month_value-=12
                 year_value+=1
         receive_installment_count = self.receive_duration//self.receive_interval
-        receive_installment_amount = round((self.amount + (self.amount*self.intreset_rate/100 if self.type==OperationType.Fund else 0)) / receive_installment_count, 2)
+        receive_installment_amount = round((self.amount + (self.amount*self.intterst_rate/100 if self.type==OperationType.Fund else 0)) / receive_installment_count, 2)
         year_value, month_value = self.receive_date.year, self.receive_date.month
         for _ in range(receive_installment_count):
             installments.append(
