@@ -21,7 +21,8 @@ class Operation(models.Model):
     def get_installments(self):
         installments=[]
         pay_installment_count = self.pay_duration//self.pay_interval
-        pay_installment_amount = round((self.amount + (self.amount*self.intterst_rate/100 if self.type==OperationType.Loan else 0)) / pay_installment_count, 2)
+        pay_amount = (self.amount + (self.amount*self.interest_rate/100 if self.type==OperationType.Loan else 0))
+        pay_installment_amount = round(pay_amount / pay_installment_count, 2)
         year_value, month_value = self.pay_date.year, self.pay_date.month
         for _ in range(pay_installment_count):
             installments.append(
@@ -35,8 +36,12 @@ class Operation(models.Model):
             if month_value > 12:
                 month_value-=12
                 year_value+=1
+        #make sure there isn't rounding problem like: the fraction -> 10/3 is 3.33 0.01 is missing
+        #adding it to the last installment
+        installments[-1]["amount"]+=round(pay_amount - pay_installment_amount*pay_installment_count, 2)
         receive_installment_count = self.receive_duration//self.receive_interval
-        receive_installment_amount = round((self.amount + (self.amount*self.intterst_rate/100 if self.type==OperationType.Fund else 0)) / receive_installment_count, 2)
+        receive_amount = (self.amount + (self.amount*self.interest_rate/100 if self.type==OperationType.Fund else 0))
+        receive_installment_amount = round( receive_amount / receive_installment_count, 2)
         year_value, month_value = self.receive_date.year, self.receive_date.month
         for _ in range(receive_installment_count):
             installments.append(
@@ -50,6 +55,9 @@ class Operation(models.Model):
             while month_value > 12:
                 month_value-=12
                 year_value+=1
+        #make sure there isn't rounding problem like: the fraction -> 10/3 is 3.33 0.01 is missing
+        #adding it to the last installment
+        installments[-1]["amount"]+=round(receive_amount - receive_installment_amount*receive_installment_count, 2)
         return installments
 
 class Transaction(models.Model):
